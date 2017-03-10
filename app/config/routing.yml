@@ -1,3 +1,18 @@
+berryfrog_frontend:
+    resource: "@BerryfrogFrontendBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+berryfrog_api:
+    resource: "@BerryfrogApiBundle/Controller/"
+    type:     annotation
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+
+#REST
+rest : 
+  type : rest 
+  resource : "routing_rest.yml"
+  prefix : /api

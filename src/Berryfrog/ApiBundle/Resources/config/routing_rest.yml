@@ -1,0 +1,4 @@
+rest : 
+  type: rest
+  resource:     "BerryfrogApiBundle:Rest"
+  name_prefix:  api_
