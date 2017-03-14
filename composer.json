@@ -28,7 +28,10 @@
 		"willdurand/hateoas-bundle" : "^1.0",
 		"hautelook/templated-uri-bundle" : "^2.0",
 		"willdurand/rest-extra-bundle" : "^1.0",
-		"friendsofsymfony/rest-bundle": "2.1.0"		
+		"friendsofsymfony/rest-bundle": "2.1.0",
+		"symfony/assetic-bundle": "^2.8",
+		"patchwork/jsqueeze": "^2.0",
+		"twig/extensions": "^1.4"		
 	},
 	"require-dev" : {
 		"sensio/generator-bundle" : "~3.0",

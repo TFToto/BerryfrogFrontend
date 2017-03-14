@@ -1,13 +1,51 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+<html class="no-js" lang="{{ app.request.locale }}">
+ 	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{% block title %}Pealer{% endblock %}</title>
+	    {% stylesheets filter="?jsqueeze" output="css/app.css"
+    		"css/foundation.min.css"
+    		"css/font-awesome.min.css"
+    		"css/jquery-ui.min.css"
+        %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+	    {% endstylesheets %}
+	    {% stylesheets filter="?jsqueeze" output="css/pealer.css"
+    		"css/custom.css"
+        %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+	    {% endstylesheets %}
+
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
+        
+        {% javascripts filter="?jsqueeze" output="js/app.js"
+    		"js/jquery.min.js"
+    		"js/jquery-ui.min.js"
+    		"js/foundation.min.js"
+        %}
+    	<script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+	</head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <div class="callout large primary">
+          <div class="row column text-center">
+			<div class="small-6 large-6 columns"><img src="{{ asset('image/logo.png') }}" alt="Berryfrog logo" class="float-right"></div>
+			<div class="small-6 large-6 columns"><img src="{{ asset('image/sun-and-clouds.png') }}" alt="Sun and clouds logo" class="float-left sun-and-clouds"></div>
+          </div>
+        </div>
+    {% block body %}{% endblock %}
+	
+	<div class="row">
+		<div class="small-10 large-centered columns">
+			 <div class="footer">
+				<h5>Made by teglo</h5>
+				<p>Copyright © 2016-2017 All Rights Reserved. Berryfrog is Free Software released under the GNU General Public License.</p>
+			</div>
+		</div>
+	</div>
+    <script>
+      jQuery(document).foundation();
+    </script>
     </body>
 </html>

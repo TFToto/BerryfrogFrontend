@@ -1,76 +1,174 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div id="wrapper">
-        <div id="container">
-            <div id="welcome">
-                <h1><span>Welcome to</span> Symfony {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</h1>
+
+<!-- We can now combine rows and columns when there's only one column in that row -->
+	<div class="row medium-8 large-7 columns">
+		<div class="blog-post">
+			<ul class="tabs" data-tabs id="example-tabs">
+				<li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Aktuelle Werte</a></li>
+				<li class="tabs-title"><a href="#panel2">Wochenübersicht</a></li>
+			</ul>
+            <div class="tabs-content" data-tabs-content="example-tabs">
+            	<div class="tabs-panel is-active" id="panel1">
+            		<p>Hier die aktuellen Werte</p>
+            		<div id="values"></div>
+            		<div id="valuedatetime"></div>
+            	</div>
+            	<div class="tabs-panel" id="panel2">
+            		<p>Hier die Wochenübersicht</p>
+            	</div>
             </div>
+			<hr>
+		</div>
+	</div>
 
-            <div id="status">
-                <p>
-                    <svg id="icon-status" width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z" fill="#759E1A"/></svg>
+<script type="text/javascript">
 
-                    Your application is now ready. You can start working on it at:
-                    <code>{{ base_dir }}</code>
-                </p>
-            </div>
+    function getValues() {
 
-            <div id="next">
-                <h2>What's next?</h2>
-                <p>
-                    <svg id="icon-book" version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="-12.5 9 64 64" enable-background="new -12.5 9 64 64" xml:space="preserve">
-                        <path fill="#AAA" d="M6.8,40.8c2.4,0.8,4.5-0.7,4.9-2.5c0.2-1.2-0.3-2.1-1.3-3.2l-0.8-0.8c-0.4-0.5-0.6-1.3-0.2-1.9
-                            c0.4-0.5,0.9-0.8,1.8-0.5c1.3,0.4,1.9,1.3,2.9,2.2c-0.4,1.4-0.7,2.9-0.9,4.2l-0.2,1c-0.7,4-1.3,6.2-2.7,7.5
-                            c-0.3,0.3-0.7,0.5-1.3,0.6c-0.3,0-0.4-0.3-0.4-0.3c0-0.3,0.2-0.3,0.3-0.4c0.2-0.1,0.5-0.3,0.4-0.8c0-0.7-0.6-1.3-1.3-1.3
-                            c-0.6,0-1.4,0.6-1.4,1.7s1,1.9,2.4,1.8c0.8,0,2.5-0.3,4.2-2.5c2-2.5,2.5-5.4,2.9-7.4l0.5-2.8c0.3,0,0.5,0.1,0.8,0.1
-                            c2.4,0.1,3.7-1.3,3.7-2.3c0-0.6-0.3-1.2-0.9-1.2c-0.4,0-0.8,0.3-1,0.8c-0.1,0.6,0.8,1.1,0.1,1.5c-0.5,0.3-1.4,0.6-2.7,0.4l0.3-1.3
-                            c0.5-2.6,1-5.7,3.2-5.8c0.2,0,0.8,0,0.8,0.4c0,0.2,0,0.2-0.2,0.5c-0.2,0.3-0.3,0.4-0.2,0.7c0,0.7,0.5,1.1,1.2,1.1
-                            c0.9,0,1.2-1,1.2-1.4c0-1.2-1.2-1.8-2.6-1.8c-1.5,0.1-2.8,0.9-3.7,2.1c-1.1,1.3-1.8,2.9-2.3,4.5c-0.9-0.8-1.6-1.8-3.1-2.3
-                            c-1.1-0.7-2.3-0.5-3.4,0.3c-0.5,0.4-0.8,1-1,1.6c-0.4,1.5,0.4,2.9,0.8,3.4l0.9,1c0.2,0.2,0.6,0.8,0.4,1.5c-0.3,0.8-1.2,1.3-2.1,1
-                            c-0.4-0.2-1-0.5-0.9-0.9c0.1-0.2,0.2-0.3,0.3-0.5s0.1-0.3,0.1-0.3c0.2-0.6-0.1-1.4-0.7-1.6c-0.6-0.2-1.2,0-1.3,0.8
-                            C4.3,38.4,4.7,40,6.8,40.8z M46.1,20.9c0-4.2-3.2-7.5-7.1-7.5h-3.8C34.8,10.8,32.7,9,30.2,9L-2.3,9.1c-2.8,0.1-4.9,2.4-4.9,5.4
-                            L-7,58.6c0,4.8,8.1,13.9,11.6,14.1l34.7-0.1c3.9,0,7-3.4,7-7.6L46.1,20.9z M-0.3,36.4c0-8.6,6.5-15.6,14.5-15.6
-                            c8,0,14.5,7,14.5,15.6S22.1,52,14.2,52C6.1,52-0.3,45-0.3,36.4z M42.1,65.1c0,1.8-1.5,3.1-3.1,3.1H4.6c-0.7,0-3-1.8-4.5-4.4h30.4
-                            c2.8,0,5-2.4,5-5.4V17.9h3.7c1.6,0,2.9,1.4,2.9,3.1V65.1L42.1,65.1z"/>
-                    </svg>
+    	var ObjUl = jQuery('<ul class="values-list"></ul>');
+		var Objdatetime = jQuery('<div class="valuestime"></div>');
+		
+    	jQuery.ajax({
+    		url: '../web/app.php/api/measurements/currentvalues',
+    		dataType: 'json',
+    		method: 'GET',
+    		timeout: '30000',
+    		success: function(data) {
+    			jQuery('#values').append(ObjUl);
+    
+    			jQuery.each(data, function(key, item) {
+    	     		console.log(key + item);
+    				switch(key) {
+    					case 'temp_dht_hic':
+    						jQuery('li.temp').remove();
+    						var Objli = jQuery('<li class="temp"><i class="fa fa-thermometer-three-quarters" aria-hidden="true"></i></li>');
+    			     		Objli.append('<span class="item-value">Temperatur:</span> <span class="value">' + item + '</span><span class="item-unit">°C</span>');
+    			     		ObjUl.append(Objli);
+    						break;
+    					case 'humidity_dht':
+    						jQuery('li.humidity').remove();
+    						var Objli = jQuery('<li class="humidity"><i class="fa fa-tint" aria-hidden="true"></i></li>');
+    			     		Objli.append('<span class="item-value">Luftfeuchtigkeit:</span> <span class="value">' + item + '</span><span class="item-unit">%</span>');
+    			     		ObjUl.append(Objli);
+    						break;
+    					case 'pressure_bmp':
+    						jQuery('li.pressure').remove();
+    						var Objli = jQuery('<li class="pressure"><i class="fa fa-cloud" aria-hidden="true"></i></li>');
+    			     		Objli.append('<span class="item-value">Luftdruck:</span> <span class="value">' + item + '</span><span class="item-unit">hPa</span>');
+    			     		ObjUl.append(Objli);
+    						break;
+    					case 'uvindex_is':
+    						jQuery('li.uvindex').remove();
+    						var Objli = jQuery('<li class="uvindex"><i class="fa fa-sun-o" aria-hidden="true"></i></li>');
+    			     		Objli.append('<span class="item-value">UV-Index:</span> <span class="value">' + item +'</span>');
+    			     		ObjUl.append(Objli);
+    						break;
+    					case 'add_datetime':
+        					jQuery('#valuedatetime').html('');
+        					var date = new Date(item);
 
-                    Read the documentation to learn
-                    <a href="http://symfony.com/doc/{{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION')[:3] }}/page_creation.html">
-                        How to create your first page in Symfony
-                    </a>
-                </p>
-            </div>
+        					switch (date.getDay()) {
+        						case 0:
+            						var name_of_day = 'Sonntag';
+            						break;
+        						case 1:
+            						var name_of_day = 'Montag';
+            						break;
+        						case 2:
+            						var name_of_day = 'Dienstag';
+            						break;
+        						case 3:
+            						var name_of_day = 'Mittwoch';
+            						break;
+        						case 4:
+            						var name_of_day = 'Donnerstag';
+            						break;
+        						case 5:
+            						var name_of_day = 'Freitag';
+            						break;
+        						case 6:
+            						var name_of_day = 'Samstag';
+            						break;
+        					}
+        					
+        					switch (date.getMonth()) {
+    						case 0:
+        						var name_of_month = 'Januar';
+        						break;
+    						case 1:
+        						var name_of_month = 'Februar';
+        						break;
+    						case 2:
+        						var name_of_month = 'März';
+        						break;
+    						case 3:
+        						var name_of_month = 'April';
+        						break;
+    						case 4:
+        						var name_of_month = 'Mai';
+        						break;
+    						case 5:
+        						var name_of_month = 'Juni';
+        						break;
+    						case 6:
+        						var name_of_month = 'Juli';
+        						break;
+        					case 7:
+        						var name_of_month = 'August';
+        						break;
+                			case 8:
+            					var name_of_month = 'September';
+            					break;
+                			case 9:
+            					var name_of_month = 'Oktober';
+            					break;
+                        	case 10:
+                    			var name_of_month = 'November';
+                    			break;
+                        	case 11:
+                    			var name_of_month = 'Dezember';
+                    			break;
+                    		}
 
-        </div>
-    </div>
-{% endblock %}
+        					var strHours = '' + date.getHours();
+                    		if(strHours.length == 1) {
+                    			strHours = '0' + strHours;
+                        	}
+                        	
+                    		var strMinutes = '' + date.getMinutes();
+                    		if(strMinutes.length == 1) {
+                    			strMinutes = '0' + strMinutes;
+                        	}
 
-{% block stylesheets %}
-<style>
-    body { background: #F5F5F5; font: 18px/1.5 sans-serif; }
-    h1, h2 { line-height: 1.2; margin: 0 0 .5em; }
-    h1 { font-size: 36px; }
-    h2 { font-size: 21px; margin-bottom: 1em; }
-    p { margin: 0 0 1em 0; }
-    a { color: #0000F0; }
-    a:hover { text-decoration: none; }
-    code { background: #F5F5F5; max-width: 100px; padding: 2px 6px; word-wrap: break-word; }
-    #wrapper { background: #FFF; margin: 1em auto; max-width: 800px; width: 95%; }
-    #container { padding: 2em; }
-    #welcome, #status { margin-bottom: 2em; }
-    #welcome h1 span { display: block; font-size: 75%; }
-    #icon-status, #icon-book { float: left; height: 64px; margin-right: 1em; margin-top: -4px; width: 64px; }
-    #icon-book { display: none; }
-
-    @media (min-width: 768px) {
-        #wrapper { width: 80%; margin: 2em auto; }
-        #icon-book { display: inline-block; }
-        #status a, #next a { display: block; }
-
-        @-webkit-keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        .sf-toolbar { opacity: 0; -webkit-animation: fade-in 1s .2s forwards; animation: fade-in 1s .2s forwards;}
+                    		var strSeconds = '' + date.getSeconds();
+                    		if(strSeconds.length == 1) {
+                    			strSeconds = '0' + strSeconds;
+                        	}
+    						
+        					jQuery('#valuedatetime').append(
+                					'Meßdaten vom ' +
+        							name_of_day + ', ' +
+        							date.getDate() + '. ' +
+        							name_of_month + ' ' + 
+                					date.getFullYear() + ', ' + 
+                					strHours + ':' +
+                					strMinutes + ':' +
+                					strSeconds + ' Uhr'
+                			);
+    						break;
+    				}
+    	       });
+    		}
+    	});
+    	setTimeout(getValues, 600000);
     }
-</style>
+    
+    jQuery(document).ready(function() {
+    	setTimeout(getValues, 500);
+    });
+
+</script>
+
 {% endblock %}
