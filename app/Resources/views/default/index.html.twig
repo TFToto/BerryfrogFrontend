@@ -3,11 +3,12 @@
 {% block body %}
 
 <!-- We can now combine rows and columns when there's only one column in that row -->
-	<div class="row medium-8 large-7 columns">
+	<div class="row medium-12 large-12 columns">
 		<div class="blog-post">
 			<ul class="tabs" data-tabs id="example-tabs">
-				<li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Aktuelle Werte</a></li>
-				<li class="tabs-title"><a href="#panel2">Wochenübersicht</a></li>
+				<li class="tabs-title"><a href="#panel1" aria-selected="true">Aktuell</a></li>
+				<li class="tabs-title is-active"><a href="#panel2">24 Stunden</a></li>
+				<li class="tabs-title"><a href="#panel3">Woche</a></li>
 			</ul>
             <div class="tabs-content" data-tabs-content="example-tabs">
             	<div class="tabs-panel is-active" id="panel1">
@@ -16,6 +17,34 @@
             		<div id="valuedatetime"></div>
             	</div>
             	<div class="tabs-panel" id="panel2">
+            		<p>Hier die gemessenen Werte der vergangenen 24 Stunden.</p>
+            		<ul class="accordion" data-accordion data-multi-expand="true">
+            			<li class="accordion-item is-active" data-accordion-item>
+							<a href="#" class="accordion-title">Temperatur</a>
+    						<div class="accordion-content" data-tab-content>
+    							<div class="hide-for-small-only">
+    								<canvas id="temp_chart" width="600" height="200"></canvas>
+    							</div>
+    							<div class="show-for-small-only">
+    								<canvas id="temp_chart_small" width="200" height="200"></canvas>
+    							</div>
+    						</div>
+  						</li>
+  						<li class="accordion-item" data-accordion-item>
+							<a href="#" class="accordion-title">Luftfeuchte</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="humidity_chart" width="600" height="200"></canvas>
+    						</div>
+  						</li>
+  						<li class="accordion-item" data-accordion-item>
+							<a href="#" class="accordion-title">Luftdruck</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="pressure_chart" width="600" height="200"></canvas>
+    						</div>
+  						</li>
+            		</ul>
+            	</div>
+            	<div class="tabs-panel" id="panel3">
             		<p>Hier die Wochenübersicht</p>
             	</div>
             </div>
@@ -27,19 +56,36 @@
 
     function getValues() {
 
+    	moment.locale('de');
+
+    	formatTime = function(dateItem) {
+
+			var strHours = '' + moment(dateItem).hour();
+    		if(strHours.length == 1) {
+    			strHours = '0' + strHours;
+        	}
+        	
+    		var strMinutes = '' + moment(dateItem).minutes();
+    		if(strMinutes.length == 1) {
+    			strMinutes = '0' + strMinutes;
+        	}
+        	
+            return strHours + ":" +  strMinutes;
+        }
+
     	var ObjUl = jQuery('<ul class="values-list"></ul>');
 		var Objdatetime = jQuery('<div class="valuestime"></div>');
 		
     	jQuery.ajax({
-    		url: '../web/app.php/api/measurements/currentvalues',
+    		url: 'app.php/api/measurements/currentvalues',
     		dataType: 'json',
     		method: 'GET',
     		timeout: '30000',
     		success: function(data) {
     			jQuery('#values').append(ObjUl);
-    
+    			console.log(data);
     			jQuery.each(data, function(key, item) {
-    	     		console.log(key + item);
+    	     		//console.log(key + item);
     				switch(key) {
     					case 'temp_dht_hic':
     						jQuery('li.temp').remove();
@@ -67,95 +113,14 @@
     						break;
     					case 'add_datetime':
         					jQuery('#valuedatetime').html('');
-        					var date = new Date(item);
-
-        					switch (date.getDay()) {
-        						case 0:
-            						var name_of_day = 'Sonntag';
-            						break;
-        						case 1:
-            						var name_of_day = 'Montag';
-            						break;
-        						case 2:
-            						var name_of_day = 'Dienstag';
-            						break;
-        						case 3:
-            						var name_of_day = 'Mittwoch';
-            						break;
-        						case 4:
-            						var name_of_day = 'Donnerstag';
-            						break;
-        						case 5:
-            						var name_of_day = 'Freitag';
-            						break;
-        						case 6:
-            						var name_of_day = 'Samstag';
-            						break;
-        					}
-        					
-        					switch (date.getMonth()) {
-    						case 0:
-        						var name_of_month = 'Januar';
-        						break;
-    						case 1:
-        						var name_of_month = 'Februar';
-        						break;
-    						case 2:
-        						var name_of_month = 'März';
-        						break;
-    						case 3:
-        						var name_of_month = 'April';
-        						break;
-    						case 4:
-        						var name_of_month = 'Mai';
-        						break;
-    						case 5:
-        						var name_of_month = 'Juni';
-        						break;
-    						case 6:
-        						var name_of_month = 'Juli';
-        						break;
-        					case 7:
-        						var name_of_month = 'August';
-        						break;
-                			case 8:
-            					var name_of_month = 'September';
-            					break;
-                			case 9:
-            					var name_of_month = 'Oktober';
-            					break;
-                        	case 10:
-                    			var name_of_month = 'November';
-                    			break;
-                        	case 11:
-                    			var name_of_month = 'Dezember';
-                    			break;
-                    		}
-
-        					var strHours = '' + date.getHours();
-                    		if(strHours.length == 1) {
-                    			strHours = '0' + strHours;
-                        	}
-                        	
-                    		var strMinutes = '' + date.getMinutes();
-                    		if(strMinutes.length == 1) {
-                    			strMinutes = '0' + strMinutes;
-                        	}
-
-                    		var strSeconds = '' + date.getSeconds();
-                    		if(strSeconds.length == 1) {
-                    			strSeconds = '0' + strSeconds;
-                        	}
-    						
+                    		
         					jQuery('#valuedatetime').append(
-                					'Meßdaten vom ' +
-        							name_of_day + ', ' +
-        							date.getDate() + '. ' +
-        							name_of_month + ' ' + 
-                					date.getFullYear() + ', ' + 
-                					strHours + ':' +
-                					strMinutes + ':' +
-                					strSeconds + ' Uhr'
+                					'Meßdaten von ' +
+                					moment.weekdays(moment(item.add_datetime).day) + ', ' +
+        							moment(item.add_datetime).date() + '. ' +
+        							moment.months(moment(item.add_datetime).month()) + ' ' + 
+        							moment(item.add_datetime).year() + ', ' + 
+                					formatTime(item.add_datetime) + ' Uhr'
                 			);
     						break;
     				}
@@ -169,6 +134,236 @@
     	setTimeout(getValues, 500);
     });
 
+</script>
+<script type="text/javascript">
+
+	function drawChart() {
+
+		formatTime = function(dateItem) {
+
+			var strHours = '' + moment(dateItem).hour();
+    		if(strHours.length == 1) {
+    			strHours = '0' + strHours;
+        	}
+        	
+    		var strMinutes = '' + moment(dateItem).minutes();
+    		if(strMinutes.length == 1) {
+    			strMinutes = '0' + strMinutes;
+        	}
+        	
+            return strHours + ":" +  strMinutes;
+        }
+    
+		var jsonData = $.ajax({
+			url: 'app.php/api/measurements/last24hours.json',
+			dataType: 'json',
+			method: 'GET',
+			timeout: '30000',
+        }).done(function (results) {
+
+		var current_loop_hour = '',
+			labels = [], 
+			data_temp_dht=[],
+			data_temp_bmp=[],
+			data_humidity_dht=[],
+			data_pressure_bmp=[],
+			smallview_data_datetime=[]
+			smallview_data_temp_dht=[];
+
+		results.forEach(function(item,index) {
+
+			if(moment(item.add_datetime).hour() == current_loop_hour) {
+
+				group_indexer = 0;
+				group_time[group_indexer] = item.temp_dht_hic;
+
+				
+				current_loop_hour = moment(item.add_datetime).hour()
+				console.log(current_loop_hour);
+
+				groud_indexer ++;
+			}
+
+			labels.push(formatTime(item.add_datetime));
+			data_temp_dht.push(parseFloat(item.temp_dht_hic));
+			data_temp_bmp.push(parseFloat(item.temp_bmp));
+			small_view = item.temp_bmp;
+			data_humidity_dht.push(parseFloat(item.humidity_dht));
+			data_pressure_bmp.push(parseFloat(item.pressure_bmp));
+		});
+
+		var ctx = document.getElementById("temp_chart");
+        var temp_chart = new Chart(ctx, {
+                
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temp DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,128,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_temp_dht,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Temp BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,196,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_temp_bmp,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    	xAxes: [{
+                            display: true,
+                            ticks:
+                            {
+                                autoSkip: true,
+                                display: true,
+                                autoSkipPadding: 10,
+                                fontFamily: 'arial',
+                                fontColor: "#888",
+                                fontSize: 14,
+                                maxRotation: 0,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Uhr'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'C°'
+                            }
+                        }]
+                    }
+                }
+            });
+
+        var ctx = document.getElementById("humidity_chart");
+        var humidity_chart = new Chart(ctx, {
+                
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Humidity DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,128,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_humidity_dht,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    	xAxes: [{
+                            display: true,
+                            ticks:
+                            {
+                                autoSkip: true,
+                                display: true,
+                                autoSkipPadding: 10,
+                                fontFamily: 'arial',
+                                fontColor: "#888",
+                                fontSize: 14,
+                                maxRotation: 0,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Uhr'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: '%'
+                            }
+                        }]
+                    }
+                }
+            });
+        
+        var ctx = document.getElementById("pressure_chart");
+        var pressure_chart = new Chart(ctx, {
+                
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pressure BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,128,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_pressure_bmp,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    	xAxes: [{
+                            display: true,
+                            ticks:
+                            {
+                                autoSkip: true,
+                                display: true,
+                                autoSkipPadding: 10,
+                                fontFamily: 'arial',
+                                fontColor: "#888",
+                                fontSize: 14,
+                                maxRotation: 0,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Uhr'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'hPa'
+                            }
+                        }]
+                    }
+                }
+            });
+
+           
+        });
+        setTimeout(drawChart, 600000);
+      }
+
+    jQuery(document).ready(function() {
+    	setTimeout(drawChart, 1000);
+    });
+    
 </script>
 
 {% endblock %}

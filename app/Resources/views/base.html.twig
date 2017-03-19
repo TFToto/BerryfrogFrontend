@@ -11,6 +11,13 @@
         %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 	    {% endstylesheets %}
+	    <style>
+    canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+    </style>
 	    {% stylesheets filter="?jsqueeze" output="css/pealer.css"
     		"css/custom.css"
         %}
@@ -23,24 +30,49 @@
     		"js/jquery.min.js"
     		"js/jquery-ui.min.js"
     		"js/foundation.min.js"
+    		"js/chart.bundle.min.js"
+    		"js/moment-with-locales.min.js"
         %}
     	<script src="{{ asset_url }}"></script>
         {% endjavascripts %}
 	</head>
     <body>
-        <div class="callout large primary">
-          <div class="row column text-center">
-			<div class="small-6 large-6 columns"><img src="{{ asset('image/logo.png') }}" alt="Berryfrog logo" class="float-right"></div>
-			<div class="small-6 large-6 columns"><img src="{{ asset('image/sun-and-clouds.png') }}" alt="Sun and clouds logo" class="float-left sun-and-clouds"></div>
-          </div>
-        </div>
+ 
+		<div class="hide-for-small-only">
+			<div class="largeheader callout large primary">
+				<div class="row column text-center">
+					<div class="small-6 large-6 columns"><img src="{{ asset('image/logo.png') }}" alt="Berryfrog logo" class="float-right"></div>
+					<div class="small-6 large-6 columns"><img src="{{ asset('image/sun-and-clouds.png') }}" alt="Sun and clouds logo" class="float-left sun-and-clouds"></div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+		<div class="show-for-small-only">
+			<div class="smallheader allout small primary">
+          		<div class="row column text-center">
+					<div class="small-12 large-12 columns"><img src="{{ asset('image/logo.png') }}" alt="Berryfrog logo"></div>
+          		</div>
+        	</div>
+		</div>
+
     {% block body %}{% endblock %}
 	
 	<div class="row">
-		<div class="small-10 large-centered columns">
-			 <div class="footer">
-				<h5>Made by teglo</h5>
-				<p>Copyright © 2016-2017 All Rights Reserved. Berryfrog is Free Software released under the GNU General Public License.</p>
+		<div class="hide-for-small-only">
+			<div class="small-10 large-centered columns">
+				<div class="footer">
+    				<h5>Made by teglo</h5>
+    				<p>Copyright © 2016-2017 All Rights Reserved. Berryfrog is Free Software released under the GNU General Public License.</p>
+    			</div>
+			</div>
+		</div>
+		<div class="show-for-small-only">
+			<div class="small-12 small-centered columns">
+    			<div class="smallfooter">
+    				<h5>Made by teglo</h5>
+    				<p>Copyright © 2016-2017 All Rights Reserved. Berryfrog is Free Software released under the GNU General Public License.</p>
+    			</div>
 			</div>
 		</div>
 	</div>
