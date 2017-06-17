@@ -6,9 +6,10 @@
 	<div class="row medium-12 large-12 columns">
 		<div class="blog-post">
 			<ul class="tabs" data-tabs id="example-tabs">
-				<li class="tabs-title"><a href="#panel1" aria-selected="true">Aktuell</a></li>
-				<li class="tabs-title is-active"><a href="#panel2">24 Stunden</a></li>
+				<li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Aktuell</a></li>
+				<li class="tabs-title"><a href="#panel2">24 Stunden</a></li>
 				<li class="tabs-title"><a href="#panel3">Woche</a></li>
+				<li class="tabs-title"><a href="#panel4">30 Tage</a></li>
 			</ul>
             <div class="tabs-content" data-tabs-content="example-tabs">
             	<div class="tabs-panel is-active" id="panel1">
@@ -22,12 +23,7 @@
             			<li class="accordion-item is-active" data-accordion-item>
 							<a href="#" class="accordion-title">Temperatur</a>
     						<div class="accordion-content" data-tab-content>
-    							<div class="hide-for-small-only">
-    								<canvas id="temp_chart" width="600" height="200"></canvas>
-    							</div>
-    							<div class="show-for-small-only">
-    								<canvas id="temp_chart_small" width="200" height="200"></canvas>
-    							</div>
+      							<canvas id="temp_chart" width="600" height="200"></canvas>
     						</div>
   						</li>
   						<li class="accordion-item" data-accordion-item>
@@ -45,7 +41,60 @@
             		</ul>
             	</div>
             	<div class="tabs-panel" id="panel3">
-            		<p>Hier die Wochenübersicht</p>
+            		<p>Hier die Wochenübersicht. Darin sind die minmalen und maximalen Werte der vergangenen 7 Tage aufgeführt</p>
+            		<ul class="accordion" data-accordion data-multi-expand="true">
+            			<li class="accordion-item is-active" data-accordion-item>
+							<a href="#" class="accordion-title">Temperatur</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="temp_chart_7days" width="600" height="200"></canvas>
+    						</div>
+    						<p>
+                				<ul>
+                					<li>minTemp DHT - Minimaler Temperaturwert des Tages vom Sensor DHT gemessen</li>
+                					<li>maxTemp DHT - Maximaler Temperaturwert des Tages vom Sensor DHT gemessen</li>
+                					<li>avgTemp DHT - Durchschnittlicher Temperaturwert des Tages vom Sensor DHT gemessen</li>
+                					<li>minTemp BMP - Minimaler Temperaturwert des Tages vom Sensor BMP gemessen</li>
+                					<li>maxTemp BMP - Maximaler Temperaturwert des Tages vom Sensor BMP gemessen</li>
+                					<li>avgTemp BMP - Durchschnittlicher Temperaturwert des Tages vom Sensor BMP gemessen</li>
+                				</ul>
+            				</p>
+  						</li>
+  						<li class="accordion-item" data-accordion-item>
+							<a href="#" class="accordion-title">Luftfeuchte</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="humidity_chart_7days" width="600" height="200"></canvas>
+    						</div>
+  						</li>
+  						<li class="accordion-item" data-accordion-item>
+							<a href="#" class="accordion-title">Luftdruck</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="pressure_chart_7days" width="600" height="200"></canvas>
+    						</div>
+  						</li>
+            		</ul>
+            	</div>
+            	<div class="tabs-panel" id="panel4">
+            		<p>Hier die Monatsübersicht. Darin sind die minmalen und maximalen Werte der vergangenen 30 Tage aufgeführt</p>
+            		<ul class="accordion" data-accordion data-multi-expand="true">
+            			<li class="accordion-item is-active" data-accordion-item>
+							<a href="#" class="accordion-title">Temperatur</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="temp_chart_30days" width="600" height="200"></canvas>
+    						</div>
+  						</li>
+  						<li class="accordion-item" data-accordion-item>
+							<a href="#" class="accordion-title">Luftfeuchte</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="humidity_chart_30days" width="600" height="200"></canvas>
+    						</div>
+  						</li>
+  						<li class="accordion-item" data-accordion-item>
+							<a href="#" class="accordion-title">Luftdruck</a>
+    						<div class="accordion-content" data-tab-content>
+      							<canvas id="pressure_chart_30days" width="600" height="200"></canvas>
+    						</div>
+  						</li>
+            		</ul>
             	</div>
             </div>
 			<hr>
@@ -116,11 +165,11 @@
                     		
         					jQuery('#valuedatetime').append(
                 					'Meßdaten von ' +
-                					moment.weekdays(moment(item.add_datetime).day) + ', ' +
-        							moment(item.add_datetime).date() + '. ' +
-        							moment.months(moment(item.add_datetime).month()) + ' ' + 
-        							moment(item.add_datetime).year() + ', ' + 
-                					formatTime(item.add_datetime) + ' Uhr'
+                					moment.weekdays(moment(item).day) + ', ' +
+        							moment(item).date() + '. ' +
+        							moment.months(moment(item).month()) + ' ' + 
+        							moment(item).year() + ', ' + 
+                					formatTime(item) + ' Uhr'
                 			);
     						break;
     				}
@@ -161,33 +210,16 @@
 			timeout: '30000',
         }).done(function (results) {
 
-		var current_loop_hour = '',
-			labels = [], 
+		var labels = [], 
 			data_temp_dht=[],
 			data_temp_bmp=[],
 			data_humidity_dht=[],
-			data_pressure_bmp=[],
-			smallview_data_datetime=[]
-			smallview_data_temp_dht=[];
+			data_pressure_bmp=[];
 
-		results.forEach(function(item,index) {
-
-			if(moment(item.add_datetime).hour() == current_loop_hour) {
-
-				group_indexer = 0;
-				group_time[group_indexer] = item.temp_dht_hic;
-
-				
-				current_loop_hour = moment(item.add_datetime).hour()
-				console.log(current_loop_hour);
-
-				groud_indexer ++;
-			}
-
+		results.forEach(function(item) {
 			labels.push(formatTime(item.add_datetime));
 			data_temp_dht.push(parseFloat(item.temp_dht_hic));
 			data_temp_bmp.push(parseFloat(item.temp_bmp));
-			small_view = item.temp_bmp;
 			data_humidity_dht.push(parseFloat(item.humidity_dht));
 			data_pressure_bmp.push(parseFloat(item.pressure_bmp));
 		});
@@ -356,6 +388,622 @@
             });
 
            
+        });
+		
+        var jsonData = $.ajax({
+			url: 'app.php/api/measurements/last7days.json',
+			dataType: 'json',
+			method: 'GET',
+			timeout: '30000',
+        }).done(function (results) {
+            
+        var labels = [], 
+			data_mintemp_dht=[],
+			data_mintemp_bmp=[],
+			data_avgtemp_dht=[],
+			data_avgtemp_bmp=[],
+			data_minhumidity_dht=[],
+			data_minpressure_bmp=[],
+			data_avghumidity_dht=[],
+			data_avgpressure_bmp=[],
+			data_maxtemp_dht=[],
+			data_maxtemp_bmp=[],
+			data_maxhumidity_dht=[],
+			data_maxpressure_bmp=[];
+
+		results.forEach(function(item) {
+
+			//labels.push(moment.weekdays(moment(item.timestamp).day));
+			//labels.push(moment().format('ddd', item.datetime_from));
+			labels.push(item.dateday);
+			data_mintemp_dht.push(parseFloat(item.mintemp_dht_hic));
+			data_avgtemp_dht.push(parseFloat(item.avgtemp_dht_hic));
+			data_mintemp_bmp.push(parseFloat(item.mintemp_bmp));
+			data_avgtemp_bmp.push(parseFloat(item.avgtemp_bmp));
+			data_minhumidity_dht.push(parseFloat(item.minhumidity_dht));
+			data_minpressure_bmp.push(parseFloat(item.minpressure_bmp));
+			data_avghumidity_dht.push(parseFloat(item.avghumidity_dht));
+			data_avgpressure_bmp.push(parseFloat(item.avgpressure_bmp));
+			data_maxtemp_dht.push(parseFloat(item.maxtemp_dht_hic));
+			data_maxtemp_bmp.push(parseFloat(item.maxtemp_bmp));
+			data_maxhumidity_dht.push(parseFloat(item.maxhumidity_dht));
+			data_maxpressure_bmp.push(parseFloat(item.maxpressure_bmp));
+		});
+		
+		var ctx = document.getElementById("temp_chart_7days");
+		var temp_chart = new Chart(ctx, {
+            
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'minTemp DHT',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,0,88,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_mintemp_dht,
+                    borderWidth: 2
+                },
+                {
+                    label: 'minTemp BMP',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,0,176,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_mintemp_bmp,
+                    borderWidth: 2
+                },
+                {
+                    label: 'maxTemp DHT',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,128,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_maxtemp_dht,
+                    borderWidth: 2
+                },
+                {
+                    label: 'maxTemp BMP',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,206,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_maxtemp_bmp,
+                    borderWidth: 2
+                },
+                {
+                    label: 'avgTemp DHT',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(128,0,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_avgtemp_dht,
+                    borderWidth: 2
+                },
+                {
+                    label: 'avgTemp BMP',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(206,0,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_avgtemp_bmp,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                	xAxes: [{
+                        display: true,
+                        ticks:
+                        {
+                            autoSkip: true,
+                            display: true,
+                            autoSkipPadding: 10,
+                            fontFamily: 'arial',
+                            fontColor: "#888",
+                            fontSize: 14,
+                            maxRotation: 0,
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tag'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Max/Min C°'
+                        }
+                    }]
+                }
+            }
+        });
+
+		var ctx = document.getElementById("humidity_chart_7days");
+        var humidity_chart = new Chart(ctx, {
+                
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'minHumidity DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,0,128,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_minhumidity_dht,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'maxHumidity DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,128,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_maxhumidity_dht,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'avgHumidity DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(128,0,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_avghumidity_dht,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    	xAxes: [{
+                            display: true,
+                            ticks:
+                            {
+                                autoSkip: true,
+                                display: true,
+                                autoSkipPadding: 10,
+                                fontFamily: 'arial',
+                                fontColor: "#888",
+                                fontSize: 14,
+                                maxRotation: 0,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Tag'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'min/max %'
+                            }
+                        }]
+                    }
+                }
+            });
+
+        var ctx = document.getElementById("pressure_chart_7days");
+        var pressure_chart = new Chart(ctx, {
+                
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'minPressure BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,0,128,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_minpressure_bmp,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'maxPressure BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,128,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_maxpressure_bmp,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'avgPressure BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(128,0,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_avgpressure_bmp,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    	xAxes: [{
+                            display: true,
+                            ticks:
+                            {
+                                autoSkip: true,
+                                display: true,
+                                autoSkipPadding: 10,
+                                fontFamily: 'arial',
+                                fontColor: "#888",
+                                fontSize: 14,
+                                maxRotation: 0,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Tag'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'min/max hPa'
+                            }
+                        }]
+                    }
+                }
+            });
+		
+        });
+
+        var jsonData = $.ajax({
+			url: 'app.php/api/measurements/last30days.json',
+			dataType: 'json',
+			method: 'GET',
+			timeout: '30000',
+        }).done(function (results) {
+            
+        var labels = [], 
+			data_mintemp_dht=[],
+			data_mintemp_bmp=[],
+			data_avgtemp_dht=[],
+			data_avgtemp_bmp=[],
+			data_minhumidity_dht=[],
+			data_minpressure_bmp=[],
+			data_avghumidity_dht=[],
+			data_avgpressure_bmp=[],
+			data_maxtemp_dht=[],
+			data_maxtemp_bmp=[],
+			data_maxhumidity_dht=[],
+			data_maxpressure_bmp=[];
+
+		results.forEach(function(item) {
+
+			labels.push(item.dateday);
+			data_mintemp_dht.push(parseFloat(item.mintemp_dht_hic));
+			data_avgtemp_dht.push(parseFloat(item.avgtemp_dht_hic));
+			data_mintemp_bmp.push(parseFloat(item.mintemp_bmp));
+			data_avgtemp_bmp.push(parseFloat(item.avgtemp_bmp));
+			data_minhumidity_dht.push(parseFloat(item.minhumidity_dht));
+			data_minpressure_bmp.push(parseFloat(item.minpressure_bmp));
+			data_avghumidity_dht.push(parseFloat(item.avghumidity_dht));
+			data_avgpressure_bmp.push(parseFloat(item.avgpressure_bmp));
+			data_maxtemp_dht.push(parseFloat(item.maxtemp_dht_hic));
+			data_maxtemp_bmp.push(parseFloat(item.maxtemp_bmp));
+			data_maxhumidity_dht.push(parseFloat(item.maxhumidity_dht));
+			data_maxpressure_bmp.push(parseFloat(item.maxpressure_bmp));
+		});
+		
+		var ctx = document.getElementById("temp_chart_30days");
+		var temp_chart = new Chart(ctx, {
+            
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'minTemp DHT',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,0,88,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_mintemp_dht,
+                    borderWidth: 2
+                },
+                {
+                    label: 'minTemp BMP',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,0,176,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_mintemp_bmp,
+                    borderWidth: 2
+                },
+                {
+                    label: 'maxTemp DHT',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,128,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_maxtemp_dht,
+                    borderWidth: 2
+                },
+                {
+                    label: 'maxTemp BMP',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(0,206,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_maxtemp_bmp,
+                    borderWidth: 2
+                },
+                {
+                    label: 'avgTemp DHT',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(128,0,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_avgtemp_dht,
+                    borderWidth: 2
+                },
+                {
+                    label: 'avgTemp BMP',
+                    fill: false,
+                    lineTension: 0.3,
+                    borderColor: "rgba(206,0,0,255)",
+                    borderCapStyle: 'butt',
+                    pointRadius: 2,
+                    pointHitRadius: 10,
+                    spanGaps: true,
+                    showLine: true,
+                    data: data_avgtemp_bmp,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                	xAxes: [{
+                        display: true,
+                        ticks:
+                        {
+                            autoSkip: true,
+                            display: true,
+                            autoSkipPadding: 10,
+                            fontFamily: 'arial',
+                            fontColor: "#888",
+                            fontSize: 14,
+                            maxRotation: 0,
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tag'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Max/Min C°'
+                        }
+                    }]
+                }
+            }
+        });
+
+		var ctx = document.getElementById("humidity_chart_30days");
+        var humidity_chart = new Chart(ctx, {
+                
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'minHumidity DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,0,128,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_minhumidity_dht,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'maxHumidity DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,128,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_maxhumidity_dht,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'avgHumidity DHT',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(128,0,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_avghumidity_dht,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    	xAxes: [{
+                            display: true,
+                            ticks:
+                            {
+                                autoSkip: true,
+                                display: true,
+                                autoSkipPadding: 10,
+                                fontFamily: 'arial',
+                                fontColor: "#888",
+                                fontSize: 14,
+                                maxRotation: 0,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Tag'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'min/max %'
+                            }
+                        }]
+                    }
+                }
+            });
+
+        var ctx = document.getElementById("pressure_chart_30days");
+        var pressure_chart = new Chart(ctx, {
+                
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'minPressure BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,0,128,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_minpressure_bmp,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'maxPressure BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(0,128,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_maxpressure_bmp,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'avgPressure BMP',
+                        fill: false,
+                        lineTension: 0.3,
+                        borderColor: "rgba(128,0,0,255)",
+                        borderCapStyle: 'butt',
+                        pointRadius: 2,
+                        pointHitRadius: 10,
+                        spanGaps: true,
+                        showLine: true,
+                        data: data_avgpressure_bmp,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                    	xAxes: [{
+                            display: true,
+                            ticks:
+                            {
+                                autoSkip: true,
+                                display: true,
+                                autoSkipPadding: 10,
+                                fontFamily: 'arial',
+                                fontColor: "#888",
+                                fontSize: 14,
+                                maxRotation: 0,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Tag'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'min/max hPa'
+                            }
+                        }]
+                    }
+                }
+            });
+		
         });
         setTimeout(drawChart, 600000);
       }
