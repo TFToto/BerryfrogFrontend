@@ -10,6 +10,7 @@
 				<li class="tabs-title"><a href="#panel2">24 Stunden</a></li>
 				<li class="tabs-title"><a href="#panel3">Woche</a></li>
 				<li class="tabs-title"><a href="#panel4">30 Tage</a></li>
+				<li class="tabs-title"><a href="#panel5">Statistik</a></li>
 			</ul>
             <div class="tabs-content" data-tabs-content="example-tabs">
             	<div class="tabs-panel is-active" id="panel1">
@@ -96,6 +97,17 @@
   						</li>
             		</ul>
             	</div>
+            	<div class="tabs-panel" id="panel5">
+            		<p>Hier die Wetter Statistik</p>
+            		<div class="row collapse">
+  						<div class="medium-3 columns">
+    						<ul class="vertical tabs" data-tabs id="example-tabs">
+    					</div>
+    					 <div class="medium-9 columns">
+							<div id="tabcontent" class="tabs-content" data-tabs-content="example-tabs"></div>
+						</div>
+    				</div>
+            	</div>
             </div>
 			<hr>
 		</div>
@@ -132,7 +144,7 @@
     		timeout: '30000',
     		success: function(data) {
     			jQuery('#values').append(ObjUl);
-    			console.log(data);
+    			//console.log(data);
     			jQuery.each(data, function(key, item) {
     	     		//console.log(key + item);
     				switch(key) {
@@ -1012,6 +1024,130 @@
     	setTimeout(drawChart, 1000);
     });
     
+</script>
+<script type="text/javascript">
+
+    function getStaticValues() {
+		
+    	jQuery.ajax({
+    		url: 'app.php/api/measurements/static',
+    		dataType: 'json',
+    		method: 'GET',
+    		timeout: '30000',
+    		success: function(data) {
+
+    			var tabindex = 1;
+    			jQuery.each(data, function(key, months_items) {
+
+    				jQuery.each(months_items, function(key, month_items) {
+
+
+        				if(tabindex == 1) {
+            				var active_tab = 'is-active';
+            				var selected_tab = 'aria-selected="true"';
+            			} else {
+    						var active_tab = '';
+    						var selected_tab = '';
+                    	}
+                    	
+        				var Objlitab = jQuery('<li class="tabs-title" role="presentation"><a href="#panel' + tabindex + 'v" id="panel' + tabindex + 'v-label" role="tab" aria-controls="panel' + tabindex + 'v">' + key + '</a></li>');
+        				jQuery('ul#example-tabs.vertical.tabs').append(Objlitab);
+
+        				var ObjTabContentPanel = jQuery('<div class="tabs-panel" id="panel' + tabindex + 'v" role="tabpanel" aria-labelledby="panel' + tabindex + 'v-label"></div>');
+						jQuery('#tabcontent').append(ObjTabContentPanel);
+
+						jQuery.each(month_items, function(key, month_item) {
+							
+							var ObjTabContentPanelTable = jQuery('<table>');
+							var ObjTabContentPanelTableHead = jQuery('<thead>');
+							var ObjTabContentPanelTableBody = jQuery('<tbody>');
+							var ObjTabContentPanelTableHeadTr = jQuery('<tr>');
+							var ObjTabContentPanelTableBodyTr1 = jQuery('<tr>');
+							var ObjTabContentPanelTableBodyTr2 = jQuery('<tr>');
+							var ObjTabContentPanelTableBodyTr3 = jQuery('<tr>');
+							var ObjTabContentPanelTableBodyTr4 = jQuery('<tr>');
+							var ObjTabContentPanelTableBodyTr5 = jQuery('<tr>');
+							var ObjTabContentPanelTableBodyTr6 = jQuery('<tr>');
+							var ObjTabContentPanelTableBodyTr7 = jQuery('<tr>');
+							
+							ObjTabContentPanel.append(ObjTabContentPanelTable);
+							
+							jQuery.each(month_item, function(key, items) {
+								
+								//Build table header
+								ObjTabContentPanelTable.append(ObjTabContentPanelTableHead);
+								ObjTabContentPanelTableHead.append(ObjTabContentPanelTableHeadTr);
+
+								var ObjTabContentPanelTableTh = jQuery('<th colspan="3">' + moment.months(moment("2000-"+ key +"-01").month()) + '</th>');
+								ObjTabContentPanelTableHeadTr.append(ObjTabContentPanelTableTh);
+
+								//Build table body
+								ObjTabContentPanelTable.append(ObjTabContentPanelTableBody);
+								ObjTabContentPanelTableBody.append(ObjTabContentPanelTableBodyTr1);
+								ObjTabContentPanelTableBody.append(ObjTabContentPanelTableBodyTr2);
+								ObjTabContentPanelTableBody.append(ObjTabContentPanelTableBodyTr3);
+								ObjTabContentPanelTableBody.append(ObjTabContentPanelTableBodyTr4);
+								ObjTabContentPanelTableBody.append(ObjTabContentPanelTableBodyTr5);
+								ObjTabContentPanelTableBody.append(ObjTabContentPanelTableBodyTr6);
+								ObjTabContentPanelTableBody.append(ObjTabContentPanelTableBodyTr7);
+
+								var ObjTabContentPanelTableTd = jQuery('<td>Minimal Temperatur:</td>');
+								ObjTabContentPanelTableBodyTr1.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td>' + items['mintemp_dht_hic'] + '°C <span class="sensor">(DHT)</span></td>');
+								ObjTabContentPanelTableBodyTr1.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td>' + items['mintemp_bmp'] + '°C <span class="sensor">(BMP)</span></td>');
+								ObjTabContentPanelTableBodyTr1.append(ObjTabContentPanelTableTd);
+								
+								var ObjTabContentPanelTableTd = jQuery('<td>Maximal Temperatur:</td>');
+								ObjTabContentPanelTableBodyTr2.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td>' + items['maxtemp_dht_hic'] + '°C <span class="sensor">(DHT)</span></td>');
+								ObjTabContentPanelTableBodyTr2.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td>' + items['maxtemp_bmp'] + '°C <span class="sensor">(BMP)</span></td>');
+								ObjTabContentPanelTableBodyTr2.append(ObjTabContentPanelTableTd);
+								
+								var ObjTabContentPanelTableTd = jQuery('<td>Durchschnittliche Temperatur:</td>');
+								ObjTabContentPanelTableBodyTr3.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td>' + items['avgtemp_dht_hic'] + '°C <span class="sensor">(DHT)</span></td>');
+								ObjTabContentPanelTableBodyTr3.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td>' + items['avgtemp_bmp'] + '°C <span class="sensor">(BMP)</span></td>');
+								ObjTabContentPanelTableBodyTr3.append(ObjTabContentPanelTableTd);
+								
+								var ObjTabContentPanelTableTd = jQuery('<td>Wüstentag:</td>');
+								ObjTabContentPanelTableBodyTr4.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td colspan="2">' + items['desertdays'] + ' Tag(e) <span class="def">(Tmax ≥ 35 °C)</span></td>');
+								ObjTabContentPanelTableBodyTr4.append(ObjTabContentPanelTableTd);
+								
+								var ObjTabContentPanelTableTd = jQuery('<td>Heißer Tag:</td>');
+								ObjTabContentPanelTableBodyTr5.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td colspan="2">' + items['hotdays'] + ' Tag(e) <span class="def">(Tmax ≥ 30 °C)</span></td>');
+								ObjTabContentPanelTableBodyTr5.append(ObjTabContentPanelTableTd);
+
+								var ObjTabContentPanelTableTd = jQuery('<td>Sommertag:</td>');
+								ObjTabContentPanelTableBodyTr6.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td colspan="2">' + items['summerdays'] + ' Tag(e) <span class="def">(Tmax ≥ 25 °C)</span></td>');
+								ObjTabContentPanelTableBodyTr6.append(ObjTabContentPanelTableTd);
+								
+								var ObjTabContentPanelTableTd = jQuery('<td>Tropennacht:</td>');
+								ObjTabContentPanelTableBodyTr7.append(ObjTabContentPanelTableTd);
+								var ObjTabContentPanelTableTd = jQuery('<td colspan="2">' + items['tropicalnights'] + ' Tag(e) <span class="def">(Tmax ≥ 20 °C)</span></td>');
+								ObjTabContentPanelTableBodyTr7.append(ObjTabContentPanelTableTd);
+
+
+							});
+						});
+    				});
+
+    	     		tabindex ++;
+    	       });
+    		}
+    	});
+    	//setTimeout(getStaticValues, 600000);
+    }
+    
+    jQuery(document).ready(function() {
+    	setTimeout(getStaticValues, 500);
+    });
+
 </script>
 
 {% endblock %}

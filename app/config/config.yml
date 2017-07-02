@@ -65,6 +65,9 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        dql:
+             datetime_functions:
+                 date_format: DoctrineExtensions\Query\Mysql\DateFormat
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -91,3 +94,20 @@ fos_rest:
         default_engine: twig
     routing_loader:
         default_format: json
+
+monolog:
+    handlers:
+        applog:
+            type: stream
+            path: /%kernel.root_dir%/symfony.log
+            level: error
+        main:
+            type: fingers_crossed
+            action_level: warning
+            handler: file
+        file:
+            type: stream
+            level: debug
+        syslog:
+            type: syslog
+            level: error
